@@ -1,5 +1,6 @@
 #include <iostream>
 #include <ostream>
+#include <bitset>
 #include <algorithm>
 
 using namespace std;
@@ -8,11 +9,11 @@ using namespace std;
 class LargeFloat {
 
 private:
-	int sign : 1;
-	int exponent : 7;
-	long long mantissa : 40;
+	bitset<1> sign;
+	bitset<8> exponent;
+	bitset<40> mantissa;
 
-	void setMantissa(double value, int power) 
+	void setMantissa(double value)
 	{
 
 	}
@@ -36,7 +37,8 @@ private:
 			value /= 2;
 			power++;
 		}
-		this->exponent = 63 + power;
+		this->exponent = 127 + power;
+		setMantissa(value - 1);
 	}
 
 public:
@@ -49,17 +51,20 @@ public:
 
 	}
 
+
+
 	LargeFloat(double value) {
+		setSign(value);
+		this->sign = 0;
+		this->exponent = 0;
+		this->mantissa = 0;
 	}
 
 };
 
 int main() {
 
-	double value = 0.75;
-
-
-
+	LargeFloat flot = LargeFloat(173.7);
 
 	return 0;
 }
