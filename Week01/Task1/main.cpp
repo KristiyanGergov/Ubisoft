@@ -1,41 +1,64 @@
 #include <iostream>
 #include <ostream>
 #include <bitset>
-#include <algorithm>
 
 using namespace std;
 
 const int MAXIMUM_BITS = 63;
-const int EXPONENT_BITS = 7;
+const int SHORT_BITS = 16;
 const int MANTISSA_BITS = 40;
-const int FLOAT_BITS = 48;
 
+const int SIGN_BITS = 1;
+const int EXPONENT_BITS = 7;
+const int MANTISSA_ONE_BITS = 8;
+
+const int MANTISSA_ONE_PADDING = 32;
+const int MANTISSA_TWO_PADDING = 16;
 
 class LargeFloat {
 
-private:
-	bitset<1> sign;
-	bitset<EXPONENT_BITS> exponent;
-	bitset<MANTISSA_BITS> mantissa;
+public:
+	short sign : SIGN_BITS;
+	short exponent : EXPONENT_BITS;
+	int mantissaOne : MANTISSA_ONE_BITS;
+	short mantissaTwo;
+	short mantissaThree;
 
-	void setMantissa(double value)
-	{
-		for (int i = 0; i < MANTISSA_BITS; i++)
+	void setMantissa_Two_Three(double value, int size, short* mantissa) {
+
+		for (int i = size - 1; i >= 0; i--)
 		{
 			value *= 2;
 
 			if (value > 1)
 			{
 				value -= 1;
-				mantissa |= (1ll << i);
+				*mantissa |= (1 << i);
 			}
 		}
+	}
+
+	void setMantissa(double value)
+	{
+		for (int i = MANTISSA_ONE_BITS - 1; i >= 0; i--)
+		{
+			value *= 2;
+
+			if (value >= 1)
+			{
+				value -= 1;
+				mantissaOne |= (1 << i);
+			}
+		}
+
+		setMantissa_Two_Three(value, SHORT_BITS, &mantissaTwo);
+		setMantissa_Two_Three(value, SHORT_BITS, &mantissaThree);
 	}
 
 	void setSign(double value)
 	{
 		sign = value > 0 ? 0 : 1;
-		setExponent(value);
+		setExponent(abs(value));
 	}
 
 	void setExponent(double value)
@@ -52,31 +75,54 @@ private:
 			power++;
 		}
 		this->exponent = MAXIMUM_BITS + power;
+
 		setMantissa(value - 1);
 	}
 
 public:
 
-	bitset<MANTISSA_BITS> getMantissa() {
-
-		return mantissa;
-	}
-
 	friend ostream & operator << (ostream &stream, const LargeFloat &value)
 	{
-		bitset<FLOAT_BITS> floatNumber;
-		floatNumber |= bitset<FLOAT_BITS>(value.mantissa.to_ullong());
-		floatNumber |= (bitset<FLOAT_BITS>(value.exponent.to_ullong()) << 39);
-		floatNumber |= (bitset<FLOAT_BITS>(value.sign.to_ullong()) << 47);
-		
+		short sign = value.sign == 0 ? 1 : -1;
+		int power = bitset<EXPONENT_BITS>(value.exponent).to_ulong() - MAXIMUM_BITS;
+
+		long long first = value.mantissaOne;
+		long long second = value.mantissaTwo;
+		first <<= MANTISSA_ONE_PADDING;
+		second <<= MANTISSA_TWO_PADDING;
+
+		long long mantissa = first | second | value.mantissaThree;
+
+		string mmm = bitset<MANTISSA_BITS>(mantissa).to_string();
+		double sum = 0;
+
+		double startPower = 0;
+
+		for (int i = MANTISSA_BITS - 1; i >= 0; i--)
+		{
+			--startPower;
+			if ((1ll << i) & mantissa) {
+				sum += pow(2, startPower);
+			}
+		}
+
+		stream << sign * (1 + sum) * pow(2, power);
+
 		return stream;
 	}
 
 	friend LargeFloat operator+(const LargeFloat & a, const LargeFloat & b)
 	{
+
 	}
 
 	LargeFloat(double value) {
+		sign = 0;
+		exponent = 0;
+		mantissaOne = 0;
+		mantissaTwo = 0;
+		mantissaThree = 0;
+
 		setSign(value);
 	}
 
@@ -84,10 +130,10 @@ public:
 
 int main() {
 
-	LargeFloat flot = LargeFloat(173.7) + LargeFloat(10);
+	LargeFloat flot = LargeFloat(173.7);
 
-
-	cout << flot;
+	cout << flot << endl;
+	cout << sizeof(flot);
 
 	system("pause");
 
