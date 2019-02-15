@@ -4,7 +4,7 @@
 
 using namespace std;
 
-const int MAXIMUM_BITS = 63;
+const int BIAS = 63;
 const int SHORT_BITS = 16;
 const int MANTISSA_BITS = 40;
 
@@ -20,7 +20,7 @@ class LargeFloat {
 public:
 	short sign : SIGN_BITS;
 	short exponent : EXPONENT_BITS;
-	int mantissaOne : MANTISSA_ONE_BITS;
+	short mantissaOne : MANTISSA_ONE_BITS;
 	short mantissaTwo;
 	short mantissaThree;
 
@@ -74,7 +74,7 @@ public:
 			value /= 2;
 			power++;
 		}
-		this->exponent = MAXIMUM_BITS + power;
+		this->exponent = BIAS + power;
 
 		setMantissa(value - 1);
 	}
@@ -84,7 +84,7 @@ public:
 	friend ostream & operator << (ostream &stream, const LargeFloat &value)
 	{
 		short sign = value.sign == 0 ? 1 : -1;
-		int power = bitset<EXPONENT_BITS>(value.exponent).to_ulong() - MAXIMUM_BITS;
+		int power = bitset<EXPONENT_BITS>(value.exponent).to_ulong() - BIAS;
 
 		long long first = value.mantissaOne;
 		long long second = value.mantissaTwo;
