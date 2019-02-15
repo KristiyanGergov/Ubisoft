@@ -17,12 +17,33 @@ const int MANTISSA_TWO_PADDING = 16;
 
 class LargeFloat {
 
-public:
+private:
 	short sign : SIGN_BITS;
 	short exponent : EXPONENT_BITS;
 	short mantissaOne : MANTISSA_ONE_BITS;
 	short mantissaTwo;
 	short mantissaThree;
+
+	LargeFloat() {
+		setDefaults();
+	}
+
+	void setDefaults() {
+		sign = 0;
+		exponent = 0;
+		mantissaOne = 0;
+		mantissaTwo = 0;
+		mantissaThree = 0;
+	}
+
+	long long getMantissa() {
+		long long first = mantissaOne;
+		long long second = mantissaTwo;
+		first <<= MANTISSA_ONE_PADDING;
+		second <<= MANTISSA_TWO_PADDING;
+
+		return first | second | mantissaThree;
+	}
 
 	void setMantissa_Two_Three(double value, int size, short* mantissa) {
 
@@ -86,14 +107,8 @@ public:
 		short sign = value.sign == 0 ? 1 : -1;
 		int power = bitset<EXPONENT_BITS>(value.exponent).to_ulong() - BIAS;
 
-		long long first = value.mantissaOne;
-		long long second = value.mantissaTwo;
-		first <<= MANTISSA_ONE_PADDING;
-		second <<= MANTISSA_TWO_PADDING;
+		long long mantissa = value.getMantissa();
 
-		long long mantissa = first | second | value.mantissaThree;
-
-		string mmm = bitset<MANTISSA_BITS>(mantissa).to_string();
 		double sum = 0;
 
 		double startPower = 0;
@@ -113,16 +128,33 @@ public:
 
 	friend LargeFloat operator+(const LargeFloat & a, const LargeFloat & b)
 	{
+		LargeFloat result = LargeFloat();
 
+		short x = bitset<EXPONENT_BITS>(a.exponent).to_ulong() - BIAS;
+		short y = bitset<EXPONENT_BITS>(b.exponent).to_ulong() - BIAS;
+
+		short sign;
+		short exponent;
+
+		if (x >= y)
+		{
+			sign = abs(y) > x ? 1 : 0;
+			y >>= x - y;
+			exponent = x + BIAS;
+		}
+		else
+		{
+			sign = abs(x) > y ? 1 : 0;
+			x >>= y - x;
+			exponent = y + BIAS;
+		}
+
+
+		return a;
 	}
 
 	LargeFloat(double value) {
-		sign = 0;
-		exponent = 0;
-		mantissaOne = 0;
-		mantissaTwo = 0;
-		mantissaThree = 0;
-
+		setDefaults();
 		setSign(value);
 	}
 
@@ -131,7 +163,6 @@ public:
 int main() {
 
 	LargeFloat flot = LargeFloat(173.7);
-
 	cout << flot << endl;
 	cout << sizeof(flot);
 
