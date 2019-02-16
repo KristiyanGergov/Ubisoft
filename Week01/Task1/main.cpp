@@ -156,7 +156,8 @@ public:
 			mantissa = mantissaY + bitset<MANTISSA_BITS>(mantissaX >> (y - x)).to_ullong();
 		}
 
-		string ok = bitset<40>(mantissa << 1).to_string();
+		mantissa = bitset<40>(mantissa << 1).to_ullong();
+		string ok = bitset<40>(mantissa).to_string();
 
 		result.sign = sign;
 		result.exponent = exponent;
