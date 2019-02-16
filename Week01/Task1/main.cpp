@@ -36,15 +36,6 @@ private:
 		mantissaThree = 0;
 	}
 
-	long long getMantissa() {
-		long long first = mantissaOne;
-		long long second = mantissaTwo;
-		first <<= MANTISSA_ONE_PADDING;
-		second <<= MANTISSA_TWO_PADDING;
-
-		return first | second | mantissaThree;
-	}
-
 	void setMantissa_Two_Three(double value, int size, short* mantissa) {
 
 		for (int i = size - 1; i >= 0; i--)
@@ -100,6 +91,15 @@ private:
 		setMantissa(value - 1);
 	}
 
+	long long static getMantissa(const LargeFloat &value) {
+		long long first = value.mantissaOne;
+		long long second = value.mantissaTwo;
+		first <<= MANTISSA_ONE_PADDING;
+		second <<= MANTISSA_TWO_PADDING;
+
+		return first | second | value.mantissaThree;
+	}
+
 public:
 
 	friend ostream & operator << (ostream &stream, const LargeFloat &value)
@@ -107,7 +107,7 @@ public:
 		short sign = value.sign == 0 ? 1 : -1;
 		int power = bitset<EXPONENT_BITS>(value.exponent).to_ulong() - BIAS;
 
-		long long mantissa = value.getMantissa();
+		long long mantissa = value.getMantissa(value);
 
 		double sum = 0;
 
@@ -136,19 +136,36 @@ public:
 		short sign;
 		short exponent;
 
+		long long mantissaX = (1ll << MANTISSA_BITS - 1) | (bitset<MANTISSA_BITS>(a.getMantissa(a)).to_ullong() >> 1);
+		long long mantissaY = (1ll << MANTISSA_BITS - 1) | (bitset<MANTISSA_BITS>(b.getMantissa(b)).to_ullong() >> 1);
+
+		long long mantissa;
+
 		if (x >= y)
 		{
 			sign = abs(y) > x ? 1 : 0;
-			y >>= x - y;
 			exponent = x + BIAS;
+
+			mantissa = mantissaX + bitset<MANTISSA_BITS>(mantissaY >> (x - y)).to_ullong();
 		}
 		else
 		{
 			sign = abs(x) > y ? 1 : 0;
-			x >>= y - x;
 			exponent = y + BIAS;
+
+			mantissa = mantissaY + bitset<MANTISSA_BITS>(mantissaX >> (y - x)).to_ullong();
 		}
 
+		string ok = bitset<40>(mantissa << 1).to_string();
+
+		result.sign = sign;
+		result.exponent = exponent;
+
+		result.mantissaOne = bitset<16>(mantissa >> MANTISSA_ONE_PADDING).to_ulong();
+
+		string tt = bitset<16>(mantissa >> MANTISSA_ONE_PADDING).to_string();
+
+		string t = bitset<16>(result.mantissaOne).to_string();
 
 		return a;
 	}
@@ -162,7 +179,7 @@ public:
 
 int main() {
 
-	LargeFloat flot = LargeFloat(173.7);
+	LargeFloat flot = LargeFloat(35.75) + LargeFloat(20.5);
 	cout << flot << endl;
 	cout << sizeof(flot);
 
