@@ -51,8 +51,8 @@ int main()
 	Integrate integrate = Integrate(1, power);
 
 	pair<int, int>* p = new pair<int, int>[1];
-	p[0] = { 0, 1 };
 
+	p[0] = { 0, 1 };
 	double area = integrate.integrateFunction(p);
 
 	cout << area << endl;
