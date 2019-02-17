@@ -185,7 +185,7 @@ public:
 
 int main() {
 
-	LargeFloat flot = LargeFloat(10000.1234);
+	LargeFloat flot = LargeFloat(100) + LargeFloat(100);
 	cout << flot << endl;
 
 	system("pause");

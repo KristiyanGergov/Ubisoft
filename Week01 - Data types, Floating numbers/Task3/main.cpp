@@ -22,23 +22,19 @@ public:
 
 		double area = 0.0;
 		double y = 0.0;
-		double* steps = new double[elCount];
+		double step = 1.0 / 100;
 		double* arguments = new double[elCount];
-
-		for (int i = 0; i < elCount; i++)
-			steps[i] = (limits[i].second - limits[i].first) / n;
 
 		for (int i = 0; i < n; i++)
 		{
 			for (int j = 0; j < elCount; j++)
 			{
-				arguments[j] = limits[j].first + (i + 0.5) * steps[j];
+				arguments[j] = limits[j].first + (i + 0.5) * step;
 			}
 			y = F(arguments, elCount);
-			area += y * 1;
+			area += y * step;
 		}
-		
-		delete[] steps;
+
 		delete[] arguments;
 
 		return area;
@@ -46,30 +42,18 @@ public:
 
 };
 
-double integrateFunction(double A, double B, double(*F)(double))
-{
-	int n = 100;
-
-	double step = (B - A) / n;
-	double area = 0.0;
-	double y = 0;
-
-	for (int i = 0; i < n; ++i)
-	{
-		y = F(A + (i + 0.5) * step);
-		area += y * step;
-	}
-
-	return area;
-}
-
-double power(double value) {
-	return value * value;
+double power(double* value, int el) {
+	return value[0] * value[0];
 }
 
 int main()
 {
-	double area = integrateFunction(0, 1, power);
+	Integrate integrate = Integrate(1, power);
+
+	pair<int, int>* p = new pair<int, int>[1];
+	p[0] = { 0, 1 };
+
+	double area = integrate.integrateFunction(p);
 
 	cout << area << endl;
 	getchar();
