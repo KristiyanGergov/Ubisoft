@@ -6,6 +6,7 @@ int main()
 {
 	int n;
 
+	std::cout << "Enter N: ";
 	std::cin >> n;
 
 	CombinationsFinder com = CombinationsFinder();

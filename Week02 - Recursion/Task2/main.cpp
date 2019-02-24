@@ -1,18 +1,31 @@
-#include <iostream>
 #include <vector>
+#include <iostream>
 #include "C:\Users\Kristiyan Gergov\Desktop\Projects\Ubisoft\Week02 - Recursion\Task1\CombinationsFinder.h"
 
 int main()
 {
-	std::vector<int> arr;
-	arr.push_back(1);
-	arr.push_back(2);
-	int n = arr.size();
 
-	int sum = 4;
+	int n, k;
+
+	std::cout << "Enter N: ";
+	std::cin >> n;
+
+	std::cout << "Enter K: ";
+	std::cin >> k;
+
+	std::vector<int> arr;
+	
+	std::cout << "Enter " << k << " numbers: ";
+
+	for (int i = 0; i < k; i++)
+	{
+		int curr;
+		std::cin >> curr;
+		arr.push_back(curr);
+	}
 
 	CombinationsFinder com = CombinationsFinder();
-	com.printCombinations(com.findAll(arr, sum));
+	com.printCombinations(com.findAll(arr, n));
 
 	system("pause");
 }
