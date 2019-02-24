@@ -1,6 +1,6 @@
 #include <iostream>
 #include <vector>
-#include "C:\Users\Kristiyan Gergov\Desktop\Projects\Ubisoft\Week02 - Recursion\Combinations\CombinationsFinder.h"
+#include "CombinationsFinder.h"
 
 int main()
 {
