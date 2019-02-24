@@ -1,3 +1,5 @@
+﻿// К Р И С Т И Я Н   Г Е Р Г О В
+
 #include <vector>
 #include <iostream>
 #include "C:\Users\Kristiyan Gergov\Desktop\Projects\Ubisoft\Week02 - Recursion\Task1\CombinationsFinder.h"

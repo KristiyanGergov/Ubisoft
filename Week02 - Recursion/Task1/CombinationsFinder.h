@@ -1,3 +1,5 @@
+﻿// К Р И С Т И Я Н   Г Е Р Г О В
+
 #pragma once
 #include <vector>
 #include <algorithm>
