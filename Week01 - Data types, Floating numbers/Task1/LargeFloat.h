@@ -114,8 +114,6 @@ public:
 
 		long long mantissa = value.getMantissa(value);
 
-		string ok = bitset<40>(mantissa).to_string();
-
 		double sum = 0;
 
 		double startPower = 0;
@@ -164,7 +162,6 @@ public:
 		}
 
 		mantissa = bitset<40>(mantissa << 1).to_ullong();
-		string ok = bitset<40>(mantissa).to_string();
 
 		result.sign = sign;
 		result.exponent = exponent;
@@ -172,10 +169,6 @@ public:
 		result.mantissaThree = mantissa;
 		result.mantissaTwo = (unsigned short)(mantissa >> MANTISSA_TWO_PADDING);
 		result.mantissaOne = (unsigned short)(mantissa >> MANTISSA_ONE_PADDING);
-
-		string t = bitset<16>(result.mantissaThree).to_string();
-		string t2 = bitset<16>(result.mantissaTwo).to_string();
-		string t3 = bitset<8>(result.mantissaOne).to_string();
 
 		return result;
 	}

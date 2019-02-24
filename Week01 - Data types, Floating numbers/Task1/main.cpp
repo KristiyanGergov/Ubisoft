@@ -7,10 +7,12 @@ using namespace std;
 
 int main() {
 
-	LargeFloat flot = LargeFloat(100) + LargeFloat(100);
-	cout << flot << endl;
-
-	system("pause");
+	LargeFloat float1 = LargeFloat(25.4);
+	LargeFloat float2 = LargeFloat(100.5);
+	LargeFloat float3 = LargeFloat(11.6);
+	cout << float1 << endl;
+	cout << float2 << endl;
+	cout << float3 << endl;
 
 	return 0;
 }
